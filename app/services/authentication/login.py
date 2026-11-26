@@ -18,7 +18,11 @@ def login_user(db: Session, identifier: str, password: str) -> TokenResponse:
         )
     )
 
-    if user is None or not Hash.verify_password(password, user.password_hash):
+    if (
+        user is None
+        or user.password_hash is None
+        or not Hash.verify_password(password, user.password_hash)
+    ):
         raise InvalidCredentialsError()
 
     try:

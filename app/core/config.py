@@ -25,5 +25,7 @@ class Settings(BaseSettings):
 
     OAUTH_STATE_EXPIRE_MINUTES: int = 10
 
+    COOKIE_SECURE: bool = False
+
 
 settings = Settings()

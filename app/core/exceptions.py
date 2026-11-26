@@ -93,3 +93,7 @@ class TooManyRequestsError(AppError):
 
 class UserAlreadyExistsError(ConflictError):
     default_detail = "User with this username or email already exists."
+
+
+class InvalidOAuthStateError(BadRequestError):
+    default_detail = "Invalid, expired, or already used OAuth state."

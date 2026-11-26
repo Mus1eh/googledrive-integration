@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.exception_handlers import register_exception_handlers
-from app.router import authentication
+from app.router import authentication, google
 
 app = FastAPI(
     title="Google Integration API",
@@ -12,3 +12,4 @@ app = FastAPI(
 register_exception_handlers(app)
 
 app.include_router(authentication.router)
+app.include_router(google.router)

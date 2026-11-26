@@ -1,3 +1,4 @@
+from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 
 from app.core.config import settings
@@ -40,3 +41,13 @@ def generate_authorization_url(state: str, code_verifier: str) -> str:
     )
 
     return authorization_url
+
+
+def exchange_authorization_code(
+    code: str, state: str, code_verifier: str
+) -> Credentials:
+    flow = create_oauth_flow(state, code_verifier)
+
+    flow.fetch_token(code=code)
+
+    return flow.credentials

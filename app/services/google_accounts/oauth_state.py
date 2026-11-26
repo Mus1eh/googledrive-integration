@@ -7,12 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.encryption import Encryption
-from app.core.exceptions import BadRequestError
+from app.core.exceptions import InvalidOAuthStateError
 from app.models.oauth_state import OAuthState
-
-
-class InvalidOAuthStateError(BadRequestError):
-    default_detail = "Invalid, expired, or already used OAuth state."
 
 
 def create_oauth_state(db: Session, user_id: int) -> tuple[str, str]:
@@ -46,7 +42,7 @@ def create_oauth_state(db: Session, user_id: int) -> tuple[str, str]:
     return state, code_verifier
 
 
-def consume_state(db: Session, state: str, browser_state: str) -> tuple[int, str]:
+def consume_oauth_state(db: Session, state: str, browser_state: str) -> tuple[int, str]:
 
     if not state or not browser_state:
         raise InvalidOAuthStateError()
