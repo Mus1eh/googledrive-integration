@@ -97,3 +97,18 @@ class UserAlreadyExistsError(ConflictError):
 
 class InvalidOAuthStateError(BadRequestError):
     default_detail = "Invalid, expired, or already used OAuth state."
+
+
+class InvalidGoogleIdentityError(UnauthorizedError):
+    default_detail = "Unable to verify Google identity."
+
+
+class GoogleAccountLinkRequiredError(ConflictError):
+    default_detail = (
+        "An account with this email already exists. "
+        "Sign in using your existing account first."
+    )
+
+
+class GoogleOAuthExchangeError(BadRequestError):
+    default_detail = "Unable to exchange Google authorization code."

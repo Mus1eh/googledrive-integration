@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Response
 
 from app.core.config import settings
+from app.core.enums import OAuthPurpose
 from app.dependencies.authentication import CurrentUser, DBSession
 from app.integrations.google.oauth import generate_authorization_url
 from app.schemas.google import GoogleConnectResponse
@@ -16,9 +17,13 @@ def connect_google(
     response: Response,
 ) -> GoogleConnectResponse:
 
-    state, code_verifier = create_oauth_state(db, current_user.id)
+    state, code_verifier = create_oauth_state(
+        db=db, purpose=OAuthPurpose.CONNECT, user_id=current_user.id
+    )
 
-    authorization_url = generate_authorization_url(state, code_verifier)
+    authorization_url = generate_authorization_url(
+        state, code_verifier, purpose=OAuthPurpose.CONNECT
+    )
 
     response.set_cookie(
         key="oauth_state",

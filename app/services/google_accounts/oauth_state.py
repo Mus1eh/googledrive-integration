@@ -7,11 +7,20 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.encryption import Encryption
+from app.core.enums import OAuthPurpose
 from app.core.exceptions import InvalidOAuthStateError
 from app.models.oauth_state import OAuthState
 
 
-def create_oauth_state(db: Session, user_id: int) -> tuple[str, str]:
+def create_oauth_state(
+    db: Session, purpose: OAuthPurpose, user_id: int | None = None
+) -> tuple[str, str]:
+
+    if purpose == OAuthPurpose.LOGIN and user_id is not None:
+        raise InvalidOAuthStateError()
+
+    if purpose == OAuthPurpose.CONNECT and user_id is None:
+        raise InvalidOAuthStateError()
 
     state = secrets.token_urlsafe(32)
     code_verifier = secrets.token_urlsafe(64)
@@ -26,6 +35,7 @@ def create_oauth_state(db: Session, user_id: int) -> tuple[str, str]:
 
     oauth_state = OAuthState(
         user_id=user_id,
+        purpose=purpose,
         state_hash=state_hash,
         code_verifier=encrypted_verifier,
         expires_at=expires_at,
@@ -42,7 +52,9 @@ def create_oauth_state(db: Session, user_id: int) -> tuple[str, str]:
     return state, code_verifier
 
 
-def consume_oauth_state(db: Session, state: str, browser_state: str) -> tuple[int, str]:
+def consume_oauth_state(
+    db: Session, state: str, browser_state: str, expected_purpose: OAuthPurpose
+) -> tuple[int | None, str]:
 
     if not state or not browser_state:
         raise InvalidOAuthStateError()
@@ -65,6 +77,7 @@ def consume_oauth_state(db: Session, state: str, browser_state: str) -> tuple[in
             oauth_state is None
             or oauth_state.used_at is not None
             or oauth_state.expires_at <= now
+            or oauth_state.purpose != expected_purpose
         ):
             raise InvalidOAuthStateError()
 

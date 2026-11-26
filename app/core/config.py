@@ -14,7 +14,8 @@ class Settings(BaseSettings):
 
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
-    GOOGLE_REDIRECT_URI: str
+    GOOGLE_LOGIN_REDIRECT_URI: str
+    GOOGLE_CONNECT_REDIRECT_URI: str
 
     TOKEN_ENCRYPTION_KEY: str
 
